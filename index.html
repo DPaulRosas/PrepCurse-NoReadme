@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Adaptativa - I.E.P. Manuel Pardo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .header-pardo {
+            background-color: #003366;
+            color: white;
+            padding: 20px;
+            border-bottom: 4px solid #ffcc00;
+        }
+
+        .chat-card {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .msg-student {
+            background-color: #e3f2fd;
+            border-radius: 12px 12px 0 12px;
+            padding: 10px 15px;
+            max-width: 80%;
+            float: right;
+            clear: both;
+            margin-bottom: 10px;
+        }
+
+        .msg-ai {
+            background-color: #f1f3f5;
+            border-left: 4px solid #003366;
+            border-radius: 0 12px 12px 12px;
+            padding: 12px 15px;
+            max-width: 85%;
+            float: left;
+            clear: both;
+            margin-bottom: 10px;
+        }
+
+        .vak-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .vak-visual {
+            background-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .vak-auditivo {
+            background-color: #ffeeba;
+            color: #856404;
+        }
+
+        .vak-kinestesico {
+            background-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-pardo text-center">
+        <h2>I.E.P. Manuel Pardo</h2>
+        <p class="mb-0">Plataforma de Aprendizaje Personalizado mediante IA (GPT-4 / Gemini)</p>
+    </div>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Panel de Configuración de Perfil -->
+        <!-- Panel de Configuración de Perfil -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white font-weight-bold">
+                    Perfil del Estudiante
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">ID Estudiante:</label>
+                        <input type="number" id="userId" class="form-control" value="1">
+                    </div>
+        
+                    <div class="mb-3">
+                        <label class="form-label">Estilo VAK Detectado:</label>
+                        <select id="estiloVak" class="form-select">
+                            <option value="Visual" selected>Visual (Imágenes, esquemas, resúmenes)</option>
+                            <option value="Auditivo">Auditivo (Explicaciones verbales, metáforas ritmo)</option>
+                            <option value="Kinestésico">Kinestésico (Ejemplos prácticos, paso a paso)</option>
+                        </select>
+                    </div>
+        
+                    <!-- Materia Editable -->
+                <!-- Materia Editable -->
+                <div class="mb-3">
+                    <label class="form-label">Materia:</label>
+                    <input type="text" id="materia" class="form-control" value="" placeholder="Ej: Comunicación, Ciencia...">
+                </div>
+                
+                <!-- Tema Editable -->
+                <div class="mb-3">
+                    <label class="form-label">Tema:</label>
+                    <input type="text" id="tema" class="form-control" value="" placeholder="Ej: El Cuento, Fotosíntesis...">
+                </div>
+                </div>
+            </div>
+        </div>
+            <!-- Chat con la IA Adaptativa -->
+            <div class="col-md-8">
+                <div class="card shadow-sm chat-card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span>Tutor Virtual Adaptativo</span>
+                        <span id="badgeVakActual" class="vak-badge vak-visual">Perfil: Visual</span>
+                    </div>
+                    <div class="chat-body" id="chatBox">
+                        <div class="msg-ai">
+                            ¡Hola! Soy tu tutor virtual de la I.E.P. Manuel Pardo. ¿Qué duda tienes sobre el tema de
+                            hoy?
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="input-group">
+                            <input type="text" id="userQuery" class="form-control"
+                                placeholder="Escribe tu pregunta aquí..."
+                                onkeypress="if(event.key==='Enter') enviarConsulta()">
+                            <button class="btn btn-primary" onclick="enviarConsulta()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('estiloVak').addEventListener('change', function () {
+            const val = this.value;
+            const badge = document.getElementById('badgeVakActual');
+            badge.innerText = 'Perfil: ' + val;
+            badge.className = 'vak-badge ' + (val === 'Visual' ? 'vak-visual' : val === 'Auditivo' ? 'vak-auditivo' : 'vak-kinestesico');
+        });
+
+    async function enviarConsulta() {
+            const queryInput = document.getElementById('userQuery');
+            const query = queryInput.value ? queryInput.value.trim() : '';
+
+            if (query === '') return;
+
+            const userId = document.getElementById('userId').value;
+            const vak = document.getElementById('estiloVak').value;
+            const materia = document.getElementById('materia').value;
+            const tema = document.getElementById('tema').value;
+
+            const chatBox = document.getElementById('chatBox');
+
+            // Mostrar pregunta
+            chatBox.innerHTML += `<div class="msg-student"><strong>Tú:</strong> ${query}</div>`;
+            queryInput.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Carga
+            const loadingId = 'loading-' + Date.now();
+            chatBox.innerHTML += `<div class="msg-ai" id="${loadingId}"><em>Generando respuesta adaptada a perfil ${vak}...</em></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const formData = new FormData();
+            formData.append('id_usuario', userId);
+            formData.append('estilo_vak', vak);
+            formData.append('materia', materia);
+            formData.append('tema', tema);
+            formData.append('pregunta', query);
+
+            try {
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                const loadingElem = document.getElementById(loadingId);
+                if (loadingElem) loadingElem.remove();
+
+                if (data.respuesta) {
+                    chatBox.innerHTML += `<div class="msg-ai"><strong>Tutor IA (${vak}):</strong><br>${data.respuesta}</div>`;
+                } else if (data.error) {
+                    chatBox.innerHTML += `<div class="msg-ai"><strong>Error:</strong> ${data.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error capturado:', error);
+                const loadingElem = document.getElementById(loadingId);
+                if (loadingElem) loadingElem.remove();
+                chatBox.innerHTML += `<div class="msg-ai"><strong>Error de comunicación:</strong> No se pudo leer la respuesta de api.php</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
+</body>
+
+</html>
